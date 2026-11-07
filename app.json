@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "AHI",
+    "slug": "ahi-v5-universal",
+    "version": "1.0.0",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "scheme": "ahi",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ahi.healthindex"
+    },
+    "android": {
+      "package": "com.ahi.healthindex",
+      "adaptiveIcon": {
+        "backgroundColor": "#F8F7F2",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "output": "single",
+      "name": "AHI · Ayurveda Health Index",
+      "themeColor": "#1F3A2B",
+      "backgroundColor": "#F4F2EA"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 120,
+          "resizeMode": "contain",
+          "backgroundColor": "#F8F7F2"
+        }
+      ]
+    ]
+  }
+}
