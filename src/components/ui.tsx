@@ -7,7 +7,7 @@ import { useIsFocused, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { BackgroundFX, PressScale, PanelGlow, useSettledFocus, type PressState } from './motion';
 import { BrandMark } from './brand';
-import { Glass } from './glass';
+import { Backdrop, Glass } from './glass';
 import { C, F, toneColor } from '../theme';
 import { lh, noSpacing, t } from '../i18n';
 import type { Band } from '../lib/scoring';
@@ -46,14 +46,16 @@ export function Screen({ children, scroll = true, fx = 1, padded = true, flushTo
   const inner: ViewStyle | null = maxWidth ? { width: '100%', maxWidth, alignSelf: 'center' } : null;
   return (
     <View style={{ flex: 1, backgroundColor: C.bg }} renderToHardwareTextureAndroid={moving && Platform.OS === 'android'}>
-      {fx ? <BackgroundFX intensity={fx} paused={!settled} /> : null}
-      {scroll ? (
-        <ScrollView contentContainerStyle={[pad, inner, style]} showsVerticalScrollIndicator={false} scrollEventThrottle={16} keyboardShouldPersistTaps="handled">
-          {children}
-        </ScrollView>
-      ) : (
-        <View style={[{ flex: 1 }, pad, inner, style]}>{children}</View>
-      )}
+      {/* The leaf layer is a blur target on Android 12+, so glass tiles over it frost it. */}
+      <Backdrop layer={fx ? <BackgroundFX intensity={fx} paused={!settled} /> : null}>
+        {scroll ? (
+          <ScrollView contentContainerStyle={[pad, inner, style]} showsVerticalScrollIndicator={false} scrollEventThrottle={16} keyboardShouldPersistTaps="handled">
+            {children}
+          </ScrollView>
+        ) : (
+          <View style={[{ flex: 1 }, pad, inner, style]}>{children}</View>
+        )}
+      </Backdrop>
     </View>
   );
 }

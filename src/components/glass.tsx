@@ -95,6 +95,40 @@ export function BlurTarget({ id, children }: { id: string; children: React.React
   );
 }
 
+/* ------------------------------------------------------------------ */
+/* Backdrop: a screen's background layer as a blur target, so glass    */
+/* inside the screen (stat tiles) can frost it on Android 12+. Glass   */
+/* can't blur the screen target it sits in (it would draw itself), so  */
+/* it blurs this layer, which holds everything behind the content.     */
+/* ------------------------------------------------------------------ */
+const BackdropCtx = createContext<TargetRef | undefined>(undefined);
+
+/** Draws `layer` behind `children`; on Android 12+ the layer is a blur target for `<Glass backdrop>`. */
+export function Backdrop({ layer, children }: { layer: React.ReactNode; children: React.ReactNode }) {
+  const ref = useRef<ViewNode | null>(null);
+  const [target, setTarget] = useState<TargetRef | undefined>(undefined);
+  const attach = useCallback((node: ViewNode | null) => {
+    ref.current = node;
+    setTarget(node ? ref : undefined);
+  }, []);
+  if (!ANDROID_BLUR || !layer) {
+    return (
+      <>
+        {layer}
+        {children}
+      </>
+    );
+  }
+  return (
+    <>
+      <BlurTargetView ref={attach} pointerEvents="none" style={StyleSheet.absoluteFill}>
+        {layer}
+      </BlurTargetView>
+      <BackdropCtx.Provider value={target}>{children}</BackdropCtx.Provider>
+    </>
+  );
+}
+
 /** The blur target registered for a screen (route key), if any. */
 export function useBlurTarget(id: string | undefined): TargetRef | undefined {
   const ctx = useContext(Targets);
@@ -116,6 +150,8 @@ interface GlassProps extends ViewProps {
   appear?: number;
   /** Android: the content this floats over; with it, Android 12+ draws a frosted blur. */
   blurTarget?: TargetRef;
+  /** Android: frost the screen's background layer (see `Backdrop`) when no `blurTarget` is given. */
+  backdrop?: boolean;
   /** Corner radius of the glass (Android's blur is clipped to it). */
   radius?: number;
 }
@@ -124,8 +160,10 @@ interface GlassProps extends ViewProps {
  * A view that is glass where it can be, and `fallback` where it can't.
  * Keep it (and its parents) at full opacity: Apple's glass does not render under reduced opacity.
  */
-export function Glass({ fallback, tint, scheme = 'auto', interactive, variant = 'regular', appear, blurTarget, radius = 0, style, children, ...rest }: GlassProps) {
+export function Glass({ fallback, tint, scheme = 'auto', interactive, variant = 'regular', appear, blurTarget: ownTarget, backdrop, radius = 0, style, children, ...rest }: GlassProps) {
   const reduced = useReducedTransparency();
+  const backdropTarget = useContext(BackdropCtx);
+  const blurTarget = ownTarget ?? (backdrop ? backdropTarget : undefined);
   const liquid = LIQUID && !reduced;
   const frosted = !liquid && ANDROID_BLUR && !!blurTarget;
   const [shown, setShown] = useState(appear === undefined);

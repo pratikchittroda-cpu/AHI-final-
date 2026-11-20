@@ -355,7 +355,7 @@ export function StatTile({ stat, delay = 0, appear, style }: { stat: Stat; delay
   const a11y = `${stat.label}: ${stat.value}${stat.unit ? ` ${stat.unit}` : ''}${stat.note ? `. ${stat.note}` : ''}`;
   return (
     // Sits over the moving leaf background, so it is a pane of liquid glass where iOS has it.
-    <Glass accessible accessibilityLabel={a11y} style={[styles.stat, style]} fallback={styles.statSolid} scheme="light" variant="clear" appear={appear}>
+    <Glass accessible accessibilityLabel={a11y} style={[styles.stat, style]} fallback={styles.statSolid} scheme="light" variant="clear" appear={appear} backdrop radius={20}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
         {stat.icon ? <Ionicons name={`${stat.icon}-outline` as IconName} size={15} color={C.moss} /> : null}
         <Text numberOfLines={2} style={{ flex: 1, fontFamily: F.medium, fontSize: 13, lineHeight: lh(13, 17), color: C.muted }}>

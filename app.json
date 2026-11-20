@@ -39,6 +39,17 @@
           "backgroundColor": "#F8F7F2"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "b168d875-03f4-481d-891e-ee030e029a71"
+      }
+    },
+    "owner": "pratik2467"
   }
 }
